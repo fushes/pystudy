@@ -1,11 +1,16 @@
-import requests, sys
-url = 'https://2022.ipchaxun.com/'
-proxy = {
-    'http' : 'http://120.42.46.226:6666',
-    'https' : 'http://120.42.46.226:6666'
-}
-try:
-    response = requests.get(url, proxies=proxy, timeout=30)
-    print(response.content.decode('utf-8'))
-except requests.exceptions.ConnectionError:
-    print('超时')
+from graph_onedrive import OneDriveManager
+
+# Use a context manager to manage the session
+with OneDriveManager(config_path="config.json", config_key="onedrive") as my_drive:
+
+    my_drive.get_usage(verbose=True)
+
+    items = my_drive.list_directory(folder_id="02CVXDX5COFX7TAEL6PBFIRA7D17DACXLP", verbose=False)
+
+    if len(items) > 7:
+        for i in range(0,7):
+            print("删除文件："+items[i]['name'])
+            confirmation = my_drive.delete_item(items[i]['id'], pre_confirm=True)
+            print(confirmation)
+    else:
+        print("当前文件数量未达到设定值")
